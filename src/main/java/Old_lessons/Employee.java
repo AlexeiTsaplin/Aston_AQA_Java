@@ -1,4 +1,4 @@
-package org.exemple;
+package Old_lessons;
 
 public class Employee {
     private String full_name;
