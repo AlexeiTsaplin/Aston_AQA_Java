@@ -1,4 +1,4 @@
-package Collections_Lesson_13.Task_2;
+package Collections_Lesson_13.task_2;
 
 public class Main {
     public static void main(String[] args) {
@@ -8,6 +8,7 @@ public class Main {
         phoneBook.add("Петровы", "987-654-321");
         phoneBook.add("Ивановы", "234-567-890");
         phoneBook.add("Сидоровы", "456-789-123");
+        phoneBook.add("Сидоровы", "123-456-789");
 
         System.out.println("Ивановы: " + phoneBook.get("Ивановы"));
         System.out.println("Петровы: " + phoneBook.get("Петровы"));
