@@ -23,7 +23,7 @@ public class HomePageSteps {
         this.driver = driver;
     }
 
-    public void acceptCookies(){
+    public void acceptCookies() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
         try {
@@ -35,34 +35,28 @@ public class HomePageSteps {
         }
     }
 
-    public String TextSumPlaceholder(){
-        WebElement sumField = driver.findElement(By.xpath("//form[@class='pay-form opened']//input[@placeholder='Сумма']"));
-        return sumField.getAttribute("placeholder");
+    public String textSumPlaceholder() {
+        return paymentSection.getSumField().getAttribute("placeholder");
     }
 
-    public String PhoneServicePlaceholder(){
-        WebElement specialField = driver.findElement(By.xpath("//form[@class='pay-form opened']//input[@id='connection-phone']"));
-        return specialField.getAttribute("placeholder");
+    public String phoneServicePlaceholder() {
+        return paymentSection.getSpecialField("Услуги связи").getAttribute("placeholder");
     }
 
-    public String PhoneInternetPlaceholder(){
-        WebElement specialField = driver.findElement(By.xpath("//form[@class='pay-form opened']//input[@id='internet-phone']"));
-        return specialField.getAttribute("placeholder");
+    public String phoneInternetPlaceholder() {
+        return paymentSection.getSpecialField("Домашний интернет").getAttribute("placeholder");
     }
 
-    public String ScoreInstalmentPlaceholder(){
-        WebElement specialField = driver.findElement(By.xpath("//form[@class='pay-form opened']//input[@id='score-instalment']"));
-        return specialField.getAttribute("placeholder");
+    public String scoreInstalmentPlaceholder() {
+        return paymentSection.getSpecialField("Рассрочка").getAttribute("placeholder");
     }
 
-    public String ScoreDebtPlaceholder(){
-        WebElement specialField = driver.findElement(By.xpath("//form[@class='pay-form opened']//input[@id='score-arrears']"));
-        return specialField.getAttribute("placeholder");
+    public String scoreDebtPlaceholder() {
+        return paymentSection.getSpecialField("Задолженность").getAttribute("placeholder");
     }
 
-    public String emailPlaceholder(){
-        WebElement emailField = driver.findElement(By.xpath("//form[@class='pay-form opened']//input[@placeholder='E-mail для отправки чека']"));
-        return emailField.getAttribute("placeholder");
+    public String emailPlaceholder() {
+        return paymentSection.getEmailField().getAttribute("placeholder");
     }
 
     public void scrollToPaymentSection() {
@@ -70,9 +64,76 @@ public class HomePageSteps {
         ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", paymentSection);
     }
 
-    public void ContinueButton(){
-        WebElement continueButton = driver.findElement(By.xpath("//*[@id=\"pay-arrears\"]/button"));
-        continueButton.click();
+    public void continueButton() {
+        paymentSection.getContinueButton().click();
+    }
+
+    public void switchToPaidFrame() {
+        driver.switchTo().frame(homePage.getSecondFrame());
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebElement pauseWait = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("google-pay-button")));
+
+    }
+
+    public String sumBynText() {
+        return paymentSection.getSumByn().getText();
+    }
+
+    public String payDetailsText() {
+        return paymentSection.getPayDetails().getText();
+    }
+
+    public WebElement googlePayButton() {
+        return paymentSection.getGooglePayButton();
+    }
+
+    public WebElement yandexPayButton() {
+        return paymentSection.getYandexPayButton();
+    }
+
+    public String cardNumberPlaceholder() {
+        return paymentSection.getCardNumber().getText();
+    }
+
+    public String cardExpiredPlaceholder() {
+        return paymentSection.getCardExpired().getText();
+    }
+
+    public String codeCvcPlaceholder() {
+        return paymentSection.getCodeCvc().getText();
+    }
+
+    public String cardHolderPlaceholder() {
+        return paymentSection.getCardHolder().getText();
+    }
+
+    public WebElement logoVisa() {
+        return paymentSection.getLogoVisa();
+    }
+
+    public WebElement logoMasterCard() {
+        return paymentSection.getLogoMasterCard();
+    }
+
+    public WebElement logoBelkart() {
+        return paymentSection.getLogoBelkart();
+    }
+
+    public WebElement logoMir() {
+        return paymentSection.getLogoMir();
+    }
+
+    public WebElement logoMaestro() {
+        return paymentSection.getLogoMaestro();
+    }
+
+    public WebElement paymentButton() {
+        return paymentSection.getPaymentButton();
+    }
+
+    public String paymentButtonText() {
+        return paymentSection.getPaymentButton().getText();
     }
 
     public void clickDropdownButton() {

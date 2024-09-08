@@ -20,19 +20,18 @@ public class MtsTests {
 
     @BeforeClass
     public void setUp() {
-        driver = WebDriverInstance.getInstance(); // Предположим, у вас есть класс DriverManager для получения экземпляра драйвера
+        driver = WebDriverInstance.getInstance();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get("https://www.mts.by/");
 
-        // Создаем экземпляр HomePage и передаем его в HomePageSteps
         HomePage homePage = new HomePage(driver);
-        steps = new HomePageSteps(homePage, driver); // Передаём homePage и driver в шаги
+        steps = new HomePageSteps(homePage, driver);
     }
 
     @DataProvider(name = "paymentData")
     public static Object[][] paymentData() {
-        return new Object[][] {
+        return new Object[][]{
                 {"Услуги связи", "297777777", "34", "connection@mail.ru"},
                 {"Домашний интернет", "297777777", "48", "internet@mail.ru"},
                 {"Рассрочка", "446564645387", "75", "installment@mail.ru"},
@@ -42,7 +41,7 @@ public class MtsTests {
 
     @DataProvider(name = "paymentDataService")
     public static Object[][] paymentDataService() {
-        return new Object[][] {
+        return new Object[][]{
                 {"Услуги связи", "297777777", "34", "connection@mail.ru"},
         };
     }
@@ -68,29 +67,29 @@ public class MtsTests {
         steps.clickDropdownButton();
         steps.selectPaymentType("Услуги связи");
 
-        Assert.assertEquals(steps.TextSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.PhoneServicePlaceholder(), "Номер телефона");
+        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
+        Assert.assertEquals(steps.phoneServicePlaceholder(), "Номер телефона");
         Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
 
         steps.clickDropdownButton();
         steps.selectPaymentType("Домашний интернет");
 
-        Assert.assertEquals(steps.TextSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.PhoneInternetPlaceholder(), "Номер абонента");
+        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
+        Assert.assertEquals(steps.phoneInternetPlaceholder(), "Номер абонента");
         Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
 
         steps.clickDropdownButton();
         steps.selectPaymentType("Рассрочка");
 
-        Assert.assertEquals(steps.TextSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.ScoreInstalmentPlaceholder(), "Номер счета на 44");
+        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
+        Assert.assertEquals(steps.scoreInstalmentPlaceholder(), "Номер счета на 44");
         Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
 
         steps.clickDropdownButton();
         steps.selectPaymentType("Задолженность");
 
-        Assert.assertEquals(steps.TextSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.ScoreDebtPlaceholder(), "Номер счета на 2073");
+        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
+        Assert.assertEquals(steps.scoreDebtPlaceholder(), "Номер счета на 2073");
         Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
     }
 
@@ -106,8 +105,29 @@ public class MtsTests {
         steps.scrollToPaymentSection();
         steps.clickDropdownButton();
         steps.fillPaymentSection(paymentSectionDto);
-        steps.ContinueButton();
-    } // прошу прощение но ночью не с тестовым номером ни с другими, у меня не получилось открыть Фрейм после кнопки Продолжить.
+        steps.continueButton();
+        steps.switchToPaidFrame();
+
+        Assert.assertEquals("34.00 BYN", steps.sumBynText());
+        Assert.assertEquals("Оплата: Услуги связи Номер:375297777777", steps.payDetailsText());
+
+        Assert.assertTrue(steps.googlePayButton().isDisplayed(), "Google Pay отсутвует");
+        Assert.assertTrue(steps.yandexPayButton().isDisplayed(), "Yandex Pay отсутвует");
+
+        Assert.assertEquals("Номер карты", steps.cardNumberPlaceholder());
+        Assert.assertEquals("Срок действия", steps.cardExpiredPlaceholder());
+        Assert.assertEquals("CVC", steps.codeCvcPlaceholder());
+        Assert.assertEquals("Имя держателя (как на карте)", steps.cardHolderPlaceholder());
+
+        Assert.assertTrue(steps.logoVisa().isDisplayed(), "logo Visa отсутвует");
+        Assert.assertTrue(steps.logoMasterCard().isDisplayed(), "logo MasterCard отсутвует");
+        Assert.assertTrue(steps.logoBelkart().isDisplayed(), "logo Belkart отсутвует");
+        Assert.assertTrue(steps.logoMir().isDisplayed(), "logo MIR отсутвует");
+        Assert.assertTrue(steps.logoMaestro().isDisplayed(), "logo Maestro отсутвует");
+
+        Assert.assertTrue(steps.paymentButton().isDisplayed(), "Payment Button отсутвует");
+        Assert.assertEquals("Оплатить 34.00 BYN", steps.paymentButtonText());
+    }
 
     @AfterClass
     public void tearDown() {
