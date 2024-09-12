@@ -1,52 +1,54 @@
 package lesson16;
 
 import lesson16.dto.PaymentSectionDto;
-import lesson16.pages.HomePage;
 import lesson16.steps.HomePageSteps;
 
-import org.openqa.selenium.WebDriver;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static lesson16.WebDriverInstance.driver;
 
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
 
 public class MtsTests {
 
     private HomePageSteps steps;
-    private WebDriver driver;
 
-    @BeforeClass
+    @BeforeEach
     public void setUp() {
+        steps = new HomePageSteps();
         driver = WebDriverInstance.getInstance();
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         driver.get("https://www.mts.by/");
-
-        HomePage homePage = new HomePage(driver);
-        steps = new HomePageSteps(homePage, driver);
     }
 
-    @DataProvider(name = "paymentData")
-    public static Object[][] paymentData() {
-        return new Object[][]{
-                {"Услуги связи", "297777777", "34", "connection@mail.ru"},
-                {"Домашний интернет", "297777777", "48", "internet@mail.ru"},
-                {"Рассрочка", "446564645387", "75", "installment@mail.ru"},
-                {"Задолженность", "207315158812", "62", "debt@mail.ru"}
-        };
+    @AfterAll
+    public static void tearDown() {
+        driver.close();
+        driver.quit();
     }
 
-    @DataProvider(name = "paymentDataService")
-    public static Object[][] paymentDataService() {
-        return new Object[][]{
-                {"Услуги связи", "297777777", "34", "connection@mail.ru"},
-        };
+    static Stream<Arguments> paymentData() {
+        return Stream.of(
+                Arguments.of("Услуги связи", "297777777", "34", "connection@mail.ru"),
+                Arguments.of("Домашний интернет", "297777777", "48", "internet@mail.ru"),
+                Arguments.of("Рассрочка", "446564645387", "75", "installment@mail.ru"),
+                Arguments.of("Задолженность", "207315158812", "62", "debt@mail.ru")
+        );
     }
 
-    @Test(description = "check payment type Debt", dataProvider = "paymentData")
+    static Stream<Arguments> paymentDataService() {
+        return Stream.of(
+                Arguments.of("Услуги связи", "297777777", "34", "connection@mail.ru")
+        );
+    }
+
+    @ParameterizedTest(name = "Проверка типа платежа")
+    @MethodSource("paymentData")
     public void paymentTypeDebtTest(String type, String specText, String sum, String email) {
         PaymentSectionDto paymentSectionDto = PaymentSectionDto.builder()
                 .paymentType(type)
@@ -60,40 +62,60 @@ public class MtsTests {
         steps.fillPaymentSection(paymentSectionDto);
     }
 
-    @Test(description = "check placeholders correct")
-    public void placeholdersCorrectTest() {
+    @Test
+    @DisplayName("Проверка корректности плейсхолдеров Услуги связи")
+    public void placeholdersCorrectTestConnection() {
         steps.acceptCookies();
         steps.scrollToPaymentSection();
         steps.clickDropdownButton();
         steps.selectPaymentType("Услуги связи");
 
-        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.phoneServicePlaceholder(), "Номер телефона");
-        Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
+        Assertions.assertEquals("Сумма", steps.textSumPlaceholder());
+        Assertions.assertEquals("Номер телефона", steps.phoneServicePlaceholder());
+        Assertions.assertEquals("E-mail для отправки чека", steps.emailPlaceholder());
+    }
 
+    @Test
+    @DisplayName("Проверка корректности плейсхолдеров Домашний интернет")
+    public void placeholdersCorrectTestInternet() {
+        steps.acceptCookies();
+        steps.scrollToPaymentSection();
         steps.clickDropdownButton();
         steps.selectPaymentType("Домашний интернет");
 
-        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.phoneInternetPlaceholder(), "Номер абонента");
-        Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
+        Assertions.assertEquals("Сумма", steps.textSumPlaceholder());
+        Assertions.assertEquals("Номер абонента", steps.phoneInternetPlaceholder());
+        Assertions.assertEquals("E-mail для отправки чека", steps.emailPlaceholder());
+    }
 
+    @Test
+    @DisplayName("Проверка корректности плейсхолдеров Рассрочка")
+    public void placeholdersCorrectTestInstalment() {
+        steps.acceptCookies();
+        steps.scrollToPaymentSection();
         steps.clickDropdownButton();
         steps.selectPaymentType("Рассрочка");
 
-        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.scoreInstalmentPlaceholder(), "Номер счета на 44");
-        Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
+        Assertions.assertEquals("Сумма", steps.textSumPlaceholder());
+        Assertions.assertEquals("Номер счета на 44", steps.scoreInstalmentPlaceholder());
+        Assertions.assertEquals("E-mail для отправки чека", steps.emailPlaceholder());
+    }
 
+    @Test
+    @DisplayName("Проверка корректности плейсхолдеров Задолженность")
+    public void placeholdersCorrectTestDebt() {
+        steps.acceptCookies();
+        steps.scrollToPaymentSection();
         steps.clickDropdownButton();
         steps.selectPaymentType("Задолженность");
 
-        Assert.assertEquals(steps.textSumPlaceholder(), "Сумма");
-        Assert.assertEquals(steps.scoreDebtPlaceholder(), "Номер счета на 2073");
-        Assert.assertEquals(steps.emailPlaceholder(), "E-mail для отправки чека");
+        Assertions.assertEquals("Сумма", steps.textSumPlaceholder());
+        Assertions.assertEquals("Номер счета на 2073", steps.scoreDebtPlaceholder());
+        Assertions.assertEquals("E-mail для отправки чека", steps.emailPlaceholder());
     }
 
-    @Test(description = "check Paid App", dataProvider = "paymentDataService")
+    @ParameterizedTest(name = "Проверка полей оплаты для Услуги связи")
+    @MethodSource("paymentDataService")
     public void paidAppTest(String type, String specText, String sum, String email) {
         PaymentSectionDto paymentSectionDto = PaymentSectionDto.builder()
                 .paymentType(type)
@@ -108,32 +130,24 @@ public class MtsTests {
         steps.continueButton();
         steps.switchToPaidFrame();
 
-        Assert.assertEquals("34.00 BYN", steps.sumBynText());
-        Assert.assertEquals("Оплата: Услуги связи Номер:375297777777", steps.payDetailsText());
+        Assertions.assertEquals("34.00 BYN", steps.sumBynText());
+        Assertions.assertEquals("Оплата: Услуги связи Номер:375297777777", steps.payDetailsText());
 
-        Assert.assertTrue(steps.googlePayButton().isDisplayed(), "Google Pay отсутвует");
-        Assert.assertTrue(steps.yandexPayButton().isDisplayed(), "Yandex Pay отсутвует");
+        Assertions.assertTrue(steps.googlePayButton().isDisplayed(), "Google Pay отсутвует");
+        Assertions.assertTrue(steps.yandexPayButton().isDisplayed(), "Yandex Pay отсутвует");
 
-        Assert.assertEquals("Номер карты", steps.cardNumberPlaceholder());
-        Assert.assertEquals("Срок действия", steps.cardExpiredPlaceholder());
-        Assert.assertEquals("CVC", steps.codeCvcPlaceholder());
-        Assert.assertEquals("Имя держателя (как на карте)", steps.cardHolderPlaceholder());
+        Assertions.assertEquals("Номер карты", steps.cardNumberPlaceholder());
+        Assertions.assertEquals("Срок действия", steps.cardExpiredPlaceholder());
+        Assertions.assertEquals("CVC", steps.codeCvcPlaceholder());
+        Assertions.assertEquals("Имя держателя (как на карте)", steps.cardHolderPlaceholder());
 
-        Assert.assertTrue(steps.logoVisa().isDisplayed(), "logo Visa отсутвует");
-        Assert.assertTrue(steps.logoMasterCard().isDisplayed(), "logo MasterCard отсутвует");
-        Assert.assertTrue(steps.logoBelkart().isDisplayed(), "logo Belkart отсутвует");
-        Assert.assertTrue(steps.logoMir().isDisplayed(), "logo MIR отсутвует");
-        Assert.assertTrue(steps.logoMaestro().isDisplayed(), "logo Maestro отсутвует");
+        Assertions.assertTrue(steps.logoVisa().isDisplayed(), "logo Visa отсутвует");
+        Assertions.assertTrue(steps.logoMasterCard().isDisplayed(), "logo MasterCard отсутвует");
+        Assertions.assertTrue(steps.logoBelkart().isDisplayed(), "logo Belkart отсутвует");
+        Assertions.assertTrue(steps.logoMir().isDisplayed(), "logo MIR отсутвует");
+        Assertions.assertTrue(steps.logoMaestro().isDisplayed(), "logo Maestro отсутвует");
 
-        Assert.assertTrue(steps.paymentButton().isDisplayed(), "Payment Button отсутвует");
-        Assert.assertEquals("Оплатить 34.00 BYN", steps.paymentButtonText());
-    }
-
-    @AfterClass
-    public void tearDown() {
-        if (driver != null) {
-            driver.close();
-            driver.quit();
-        }
+        Assertions.assertTrue(steps.paymentButton().isDisplayed(), "Payment Button отсутвует");
+        Assertions.assertEquals("Оплатить 34.00 BYN", steps.paymentButtonText());
     }
 }
