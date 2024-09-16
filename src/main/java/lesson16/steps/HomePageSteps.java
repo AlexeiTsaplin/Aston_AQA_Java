@@ -4,24 +4,18 @@ import lesson16.dto.PaymentSectionDto;
 import lesson16.pages.HomePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import static lesson16.WebDriverInstance.driver;
 
 import java.time.Duration;
 
 public class HomePageSteps {
 
-    private final HomePage homePage;
-    private final HomePage.PaymentSection paymentSection;
-    private final WebDriver driver;
+    private final HomePage homePage = new HomePage();
+    private final HomePage.PaymentSection paymentSection = new HomePage.PaymentSection();
 
-    public HomePageSteps(HomePage homePage, WebDriver driver) {
-        this.homePage = homePage;
-        this.paymentSection = homePage.new PaymentSection();
-        this.driver = driver;
-    }
 
     public void acceptCookies() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));

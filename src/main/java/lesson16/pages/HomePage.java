@@ -8,16 +8,13 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
+import static lesson16.WebDriverInstance.driver;
 
 public class HomePage {
 
-    private WebDriver driver;
+
     private final By paymentSection = By.xpath("//section[@class='pay']");
     private final By secondFrame = By.className("bepaid-iframe");
-
-    public HomePage(WebDriver driver) {
-        this.driver = driver;
-    }
 
     public WebElement getPaymentSection() {
         return driver.findElement(paymentSection);
@@ -27,7 +24,7 @@ public class HomePage {
         return driver.findElement(secondFrame);
     }
 
-    public class PaymentSection {
+    public static class PaymentSection {
 
         private final By dropdownButton = By.xpath("//div[@class='select']");
         private final By paymentTypes = By.xpath("//div[@class='select']//ul[@class='select__list']/li/p");
